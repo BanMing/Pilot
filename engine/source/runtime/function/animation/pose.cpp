@@ -1,5 +1,3 @@
-#include "runtime/core/base/macro.h"
-
 #include "runtime/function/animation/pose.h"
 #include "runtime/core/math/vector3.h"
 
@@ -65,15 +63,17 @@ void AnimationPose::blend(const AnimationPose& pose)
         const auto& bone_trans_two = pose.m_bone_poses[i];
 
         float sum_weight = pose.m_weight.m_blend_weight[i] + m_weight.m_blend_weight[i];
-        //LOG_INFO("sum_weight:[{}] current[{}] pose[{}] ", sum_weight, m_weight.m_blend_weight[i], pose.m_weight.m_blend_weight[i]);
         if (sum_weight != 0)
         {
             float cur_weight           = pose.m_weight.m_blend_weight[i] / sum_weight;
-            m_weight.m_blend_weight[i] = cur_weight;
+            // because it uses the first pose as the result, all the poses will add themselves to first pose
+            // the sum of all poses weight is 1, we must keep the sum always is 1.
+            // so when we blend all poses except last one, the last pose weight is 1 - first pose weight.
+            m_weight.m_blend_weight[i] = sum_weight;
             bone_trans_one.m_position = Vector3::lerp(bone_trans_one.m_position, bone_trans_two.m_position, cur_weight);
             bone_trans_one.m_scale    = Vector3::lerp(bone_trans_one.m_scale, bone_trans_two.m_scale, cur_weight);
             bone_trans_one.m_rotation =
-                Quaternion::nLerp(cur_weight, bone_trans_one.m_rotation, bone_trans_two.m_rotation);
+                Quaternion::nLerp(cur_weight, bone_trans_one.m_rotation, bone_trans_two.m_rotation, true);
         }
     }
 }
