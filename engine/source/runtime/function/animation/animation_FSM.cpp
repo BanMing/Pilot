@@ -1,4 +1,5 @@
 #include "runtime/function/animation/animation_FSM.h"
+#include "runtime/core/base/macro.h"
 #include <iostream>
 namespace Pilot
 {
@@ -29,7 +30,7 @@ namespace Pilot
         float  speed          = tryGetFloat(signals, "speed", 0);
         bool   is_moving      = speed > 0.01f;
         // you can find it in player engine\asset\objects\character\player\player.object.json : 65
-        bool   start_walk_end = speed < 2;
+        bool   start_walk_end = speed < 0.1f;
 
         switch (m_state)
         {
@@ -46,7 +47,11 @@ namespace Pilot
                 break;
             case States::_walk_start:
                 /**** [1] ****/
-                if (is_clip_finish)
+                if (!is_moving)
+                {
+                    m_state = States::_idle;
+                }
+                else if (is_clip_finish)
                 {
                     m_state = States::_walk_run;
                 }
@@ -118,6 +123,8 @@ namespace Pilot
             default:
                 break;
         }
+
+        LOG_INFO("crrent state {}", m_state);
         return last_state != m_state;
     }
 
