@@ -103,6 +103,8 @@ namespace Pilot
                 {
                     m_ratio = 0;
                 }
+                updateSignal("clip_ratio", m_ratio);
+
                 break;
             }
         }

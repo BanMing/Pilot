@@ -28,6 +28,7 @@ namespace Pilot
         bool   is_clip_finish = tryGetBool(signals, "clip_finish", false);
         bool   is_jumping     = tryGetBool(signals, "jumping", false);
         float  speed          = tryGetFloat(signals, "speed", 0);
+        float  clip_ratio          = tryGetFloat(signals, "clip_ratio", 0);
         bool   is_moving      = speed > 0.01f;
         // you can find it in player engine\asset\objects\character\player\player.object.json : 65
         bool   start_walk_end = speed < 0.1f;
@@ -115,7 +116,7 @@ namespace Pilot
                 break;
             case States::_jump_end_from_walk_run:
                 /**** [9] ****/
-                if (is_clip_finish)
+                if (clip_ratio > 0.5f)
                 {
                     m_state = States::_walk_run;
                 }
@@ -124,7 +125,7 @@ namespace Pilot
                 break;
         }
 
-        LOG_INFO("crrent state {}", m_state);
+        //LOG_INFO("crrent state {} ratio {}", m_state, clip_ratio);
         return last_state != m_state;
     }
 
